@@ -14,3 +14,16 @@ INSERT INTO lawyers (first_name, last_name, firm, email, phone_number) VALUES
 ('Laura', 'Taylor', 'Taylor & Associates', 'laura.taylor@taylorassoc.com', '890-123-4567'),
 ('James', 'Anderson', 'Anderson Law Group', 'james.anderson@andersonlaw.com', '901-234-5678'),
 ('Olivia', 'Martinez', 'Martinez & Partners', 'olivia.martinez@martinezpartners.com', '012-345-6789');
+
+-- Insert inmates
+INSERT INTO inmates (first_name, last_name) VALUES
+('Michael', 'Johnson'),
+('Sarah', 'Smith'),
+('David', 'Brown'),
+('Emily', 'Davis'),
+('James', 'Wilson'),
+('Laura', 'Taylor'),
+('Robert', 'Miller'),
+('Olivia', 'Martinez'),
+('John', 'Anderson'),
+('Sophia', 'Garcia');

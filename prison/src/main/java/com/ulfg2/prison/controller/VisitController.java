@@ -4,6 +4,7 @@ import com.ulfg2.prison.domain.VisitStatus;
 import com.ulfg2.prison.persistence.VisitEntity;
 import com.ulfg2.prison.repo.VisitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class VisitController {
     @RequestMapping(method = RequestMethod.POST, path = "/visits")
     public ResponseEntity<Void> createVisit(@RequestBody VisitEntity visit){
         repo.save(visit);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(method= RequestMethod.GET, path = "/visits/{visitId}/cancel")

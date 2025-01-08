@@ -25,3 +25,10 @@ CREATE TABLE IF NOT EXISTS lawyers(
     email VARCHAR(255) UNIQUE NOT NULL,        -- Email of the user (must be unique)
     phone_number VARCHAR(15) NOT NULL
 );
+
+-- Create inmates table
+CREATE TABLE IF NOT EXISTS inmates(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL
+);

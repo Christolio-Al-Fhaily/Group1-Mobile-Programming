@@ -5,18 +5,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Entity
-@Table(name = "users")
-@Setter
+@Table(name = "lawyers")
 @Getter
-public class UserEntity {
-
+@Setter
+public class LawyerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     @NonNull
     private String firstName;
     @NonNull
@@ -24,11 +20,7 @@ public class UserEntity {
     @NonNull
     private String email;
     @NonNull
-    private String password;
-    @NonNull
-    private String ssn;
-    @NonNull
-    private LocalDate dateOfBirth;
+    private String firm;
     @NonNull
     private String phoneNumber;
 }

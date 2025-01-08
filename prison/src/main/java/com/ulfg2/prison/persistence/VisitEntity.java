@@ -1,5 +1,6 @@
 package com.ulfg2.prison.persistence;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ulfg2.prison.domain.VisitStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class VisitEntity {
     private LocalDate visitDate;
 
     @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm a")
     private LocalTime visitTime;
 
     @NonNull

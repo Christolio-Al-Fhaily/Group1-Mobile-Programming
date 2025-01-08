@@ -31,4 +31,7 @@ public class UserEntity {
     private LocalDate dateOfBirth;
     @NonNull
     private String phoneNumber;
+    @OneToOne
+    @JoinColumn(name = "inmate_id", nullable = false)
+    private InmateEntity inmate;
 }

@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    UserRepository repo;
+    private UserRepository repo;
 
     @RequestMapping(method = RequestMethod.POST, path = "/signup")
-    public ResponseEntity<String> signup(@RequestBody UserEntity user) {
+    public ResponseEntity<String> signUp(@RequestBody UserEntity user) {
         try{
             repo.save(user);
         }catch (DataIntegrityViolationException e){

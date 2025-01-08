@@ -14,4 +14,14 @@ CREATE TABLE IF NOT EXISTS users (
     ssn VARCHAR(11) UNIQUE NOT NULL,           -- Social Security Number (unique)
     date_of_birth DATE NOT NULL,               -- User's date of birth
     phone_number VARCHAR(15) NOT NULL          -- Phone number of the user
-    );
+);
+
+-- Create lawyers table
+CREATE TABLE IF NOT EXISTS lawyers(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    firm VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,        -- Email of the user (must be unique)
+    phone_number VARCHAR(15) NOT NULL
+);

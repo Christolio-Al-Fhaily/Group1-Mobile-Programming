@@ -31,4 +31,6 @@ public class UserEntity {
     private LocalDate dateOfBirth;
     @NonNull
     private String phoneNumber;
+    @NonNull
+    private int inmateId;
 }

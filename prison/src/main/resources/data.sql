@@ -1,7 +1,3 @@
--- Insert default admin user
-INSERT INTO users (first_name, last_name, email, password, ssn, date_of_birth, phone_number)
-VALUES ('admin', 'admin', 'admin@prison.com','admin_password_hash', '123456789', '2002-11-17', '71134227');
-
 -- Insert lawyers
 INSERT INTO lawyers (first_name, last_name, firm, email, phone_number) VALUES
 ('John', 'Smith', 'Smith & Co.', 'john.smith@smithco.com', '123-456-7890'),
@@ -27,3 +23,7 @@ INSERT INTO inmates (first_name, last_name) VALUES
 ('Olivia', 'Martinez'),
 ('John', 'Anderson'),
 ('Sophia', 'Garcia');
+
+-- Insert default admin user
+INSERT INTO users (first_name, last_name, email, password, ssn, date_of_birth, phone_number, inmate_id)
+VALUES ('admin', 'admin', 'admin@prison.com','admin_password_hash', '123456789', '2002-11-17', '71134227', 1);

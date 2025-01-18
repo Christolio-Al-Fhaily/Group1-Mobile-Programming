@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math'; // Import the math library
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,16 +10,17 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class BookAVisitForm extends StatefulWidget {
   final User user;
 
-  const BookAVisitForm({Key? key, required this.user}) : super(key: key);
+  const BookAVisitForm({super.key, required this.user});
 
   @override
-  _BookAVisitFormState createState() => _BookAVisitFormState();
+  State<BookAVisitForm> createState() => _BookAVisitFormState();
 }
 
 class _BookAVisitFormState extends State<BookAVisitForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _visitDateController = TextEditingController();
   final TextEditingController _visitTimeController = TextEditingController();
+  bool _isLoading = false;
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -32,6 +34,23 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.orangeAccent, // Header color (month and year)
+              onPrimary: Colors.white, // Text color in header
+              onSurface: Colors.black, // Text color for days
+            ),
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+            ),
+            dialogBackgroundColor:
+                Colors.white, // Background color for date picker
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {
@@ -46,6 +65,24 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.orangeAccent, // Header color (month and year)
+              //onPrimary: Colors.white,  // Text color in header
+              secondary: Colors.orangeAccent,
+            ),
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+              buttonColor: Colors.orangeAccent, // AM/PM button background color
+            ),
+            dialogBackgroundColor:
+                Colors.white, // Background color for date picker
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedTime != null) {
@@ -67,8 +104,13 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
       });
     }
   }
+
   // Function to submit the form
   void _submitForm() async {
+    setState(() {
+      _isLoading = true; // Show spinner
+    });
+
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null || _selectedTime == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -80,9 +122,9 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
       }
 
       // Generate a random room number between 10 and 25
-      final randomRoomNumber = Random().nextInt(16) + 10;
+      final int randomRoomNumber = Random().nextInt(16) + 10;
 
-      final visitData = {
+      final Map<String, Object?>visitData = {
         'userId': widget.user.id,
         'inmateId': widget.user.inmateId,
         'visitDate': DateFormat('yyyy-MM-dd').format(_selectedDate!),
@@ -100,42 +142,27 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
         'status': _status,
       };
       try {
-        print(dotenv.env['API_URL']);
-        final response = await http.post(
-          Uri.parse(dotenv.env['API_URL']! + '/visits'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(visitData),
-        );
+        final response = await http
+            .post(
+              Uri.parse('${dotenv.env['API_URL']!}/visits'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode(visitData),
+            )
+            .timeout(const Duration(seconds: 10));
 
         if (response.statusCode == 201) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Visit successfully booked! Room number: $randomRoomNumber'),
-            ),
-          );
-
-          _formKey.currentState!.reset();
-          setState(() {
-            _selectedDate = null;
-            _selectedTime = null;
-            _visitDateController.clear();
-            _visitTimeController.clear();
-            _selectedDuration = null;
-            _status = 'PENDING';
-          });
+          showSuccessDialog(visitData, randomRoomNumber);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to book visit: ${response.body}'),
-            ),
-          );
+          showErrorDialog(response.body);
         }
+      } on TimeoutException {
+        showErrorDialog("Request timed out.");
       } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error occurred: $error'),
-          ),
-        );
+        showErrorDialog(error.toString());
+      } finally {
+        setState(() {
+          _isLoading = false; // Show spinner
+        });
       }
     }
   }
@@ -144,8 +171,10 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book a Visit',
-          style: TextStyle(fontSize: 25,
+        title: const Text(
+          'Book a Visit',
+          style: TextStyle(
+            fontSize: 25,
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
@@ -169,14 +198,15 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                   // Display inmate ID at the top
                   Text(
                     'Visit Inmate #${widget.user.id}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const Divider(height: 30, thickness: 1.5, color: Colors.black),
+                  const Divider(
+                      height: 30, thickness: 1.5, color: Colors.black),
                   const SizedBox(height: 75),
 
                   // Date Picker
@@ -184,17 +214,19 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                     controller: _visitDateController,
                     decoration: InputDecoration(
                       labelText: 'Visit Date',
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,),
+                        fontSize: 20,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      suffixIcon: const Icon(Icons.calendar_today, color: Colors.black),
+                      suffixIcon:
+                          const Icon(Icons.calendar_today, color: Colors.black),
                     ),
                     readOnly: true,
                     onTap: _pickDate,
@@ -212,17 +244,19 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                     controller: _visitTimeController,
                     decoration: InputDecoration(
                       labelText: 'Visit Time',
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,),
+                        fontSize: 20,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      suffixIcon: const Icon(Icons.access_time, color: Colors.black),
+                      suffixIcon:
+                          const Icon(Icons.access_time, color: Colors.black),
                     ),
                     readOnly: true,
                     onTap: _pickTime,
@@ -240,14 +274,15 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                     value: _selectedDuration,
                     decoration: InputDecoration(
                       labelText: 'Duration (min)',
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,),
+                        fontSize: 20,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
@@ -273,10 +308,11 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
 
                   // Submit Button
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center, // Centers the content horizontally
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // Centers the content horizontally
                     children: [
                       // First column: SizedBox
-                      SizedBox(
+                      const SizedBox(
                         width: 50.0, // Adjust the width as needed
                       ),
 
@@ -285,12 +321,15 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orangeAccent,
-                          elevation: 10, // Set elevation for the shadow
-                          shadowColor: Colors.grey.withOpacity(0.8), // Customize the shadow color
+                          elevation: 10,
+                          // Set elevation for the shadow
+                          shadowColor: Colors.grey.withOpacity(0.8),
+                          // Customize the shadow color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 32.0),
                         ),
                         child: const Text(
                           'Book Visit',
@@ -303,18 +342,106 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                       ),
 
                       // Third column: SizedBox
-                      SizedBox(
+                      const SizedBox(
                         width: 50.0, // Adjust the width as needed
                       ),
                     ],
-                  )
-
-                ],  //ListView children
+                  ),
+                  const SizedBox(height: 10),
+                  if (_isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.orange, // Spinner color
+                      ),
+                    ),
+                ], //ListView children
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  showErrorDialog(String error) {
+    // Show failure dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Booking Failed'),
+          content: Text('Failed to book visit: $error'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.orangeAccent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showSuccessDialog(Map<String, Object?> visitData, int randomRoomNumber) {
+    // Show success dialog`
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Visit Booked Successfully',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your visit has been successfully booked on ${visitData['visitDate']} at ${visitData['visitTime']} for ${visitData['duration']} minutes.',
+                textAlign: TextAlign.left,
+              ),
+              Text(
+                'Room number: $randomRoomNumber',
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _formKey.currentState!.reset(); // Reset the form
+                setState(() {
+                  _selectedDate = null;
+                  _selectedTime = null;
+                  _visitDateController.clear();
+                  _visitTimeController.clear();
+                  _selectedDuration = null;
+                  _status = 'PENDING';
+                });
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.orangeAccent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -25,7 +25,8 @@ public class UserController {
         try {
             repo.save(user);
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.ok("Email already exists");
+            System.out.println(e.getMessage());
+            return ResponseEntity.ok("Email already exists or inmate does not exist");
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

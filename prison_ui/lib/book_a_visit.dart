@@ -126,7 +126,6 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
 
       final Map<String, Object?>visitData = {
         'userId': widget.user.id,
-        'inmateId': widget.user.inmateId,
         'visitDate': DateFormat('yyyy-MM-dd').format(_selectedDate!),
         'visitTime': DateFormat('hh:mm a').format(
           DateTime(

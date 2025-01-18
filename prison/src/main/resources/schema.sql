@@ -39,13 +39,28 @@ CREATE TABLE IF NOT EXISTS users (
 -- CREATE visits table
 CREATE TABLE IF NOT EXISTS visits (
     id INT AUTO_INCREMENT PRIMARY KEY,         -- Unique identifier
-    inmate_id INT NOT NULL,                    -- Foreign key: Inmate ID
     user_id INT NOT NULL,                      -- Foreign key: User ID
     visit_date DATE NOT NULL,                  -- Date of the visit
     visit_time TIME NOT NULL,                  -- Time of the visit
     duration INT NOT NULL,                     -- Duration of the visit in minutes
     room INT DEFAULT NULL,                     -- Room number (optional)
     status VARCHAR(255) DEFAULT NULL,          -- Status of the visit (optional)
-    FOREIGN KEY (inmate_id) REFERENCES inmates(id),  -- Foreign key constraint
     FOREIGN KEY (user_id) REFERENCES users(id)         -- Foreign key constraint
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,         -- Unique identifier
+    user_id INT NOT NULL,
+    notification_type VARCHAR(50) NOT NULL,
+    notification_message VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS complaints (
+    id INT AUTO_INCREMENT PRIMARY KEY,         -- Unique identifier
+    user_id INT NOT NULL,
+    complaint_type VARCHAR(50) NOT NULL,
+    incident_date DATE NOT NULL,
+    description VARCHAR(100) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );

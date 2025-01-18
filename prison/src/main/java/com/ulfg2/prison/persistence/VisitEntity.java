@@ -20,9 +20,6 @@ public class VisitEntity {
     private int id;
 
     @NonNull
-    private int inmateId;
-
-    @NonNull
     private int userId;
 
     @NonNull

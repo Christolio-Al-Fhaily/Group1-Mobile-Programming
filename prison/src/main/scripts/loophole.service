@@ -1,0 +1,31 @@
+[Unit]
+Description=Start LoopHole Tunnel on port 8080
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Ensure the network is online before starting
+ExecStartPre=/bin/bash -c 'until nc -z google.com 443; do sleep 1; done;'
+
+# Start Loophole
+ExecStart=/bin/bash -c '/home/christolio/Desktop/loophole http 8080 --hostname=christoliopi'
+
+# Health check to confirm successful start
+ExecStartPost=/bin/bash -c 'timeout 10s bash -c "until journalctl -u loophole.service -n 3 | grep -q \\"Awaiting connections\\"; do sleep 1; done" || exit 1'
+
+# Restart on failure
+Restart=on-failure
+RestartSec=5
+
+# Run as the specified user
+User=christolio
+WorkingDirectory=/home/christolio
+
+# Log output to journalctl
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

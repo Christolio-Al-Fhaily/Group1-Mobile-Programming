@@ -149,31 +149,27 @@ class _SignupPageState extends State<SignupPage> {
                             }
                             return null;
                           }),
-                      const SizedBox(height: 20, width: 50),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(width: 50.0),
-                          ElevatedButton(
-                            onPressed: _signup,
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orangeAccent,
-                                elevation: 10,
-                                shadowColor: Colors.grey.withOpacity(0.8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 16.0, horizontal: 32.0)),
-                            child: const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _signup,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orangeAccent,
+                              elevation: 10,
+                              shadowColor: Colors.grey.withOpacity(0.8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 32.0)),
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(
                         height: 10,

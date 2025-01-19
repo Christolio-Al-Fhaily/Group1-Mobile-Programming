@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -55,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse('${dotenv.env['API_URL']!}/login'), // Update endpoint
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -70,7 +71,10 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         showMessageDialog("Login Failed", "Invalid email or password");
       }
-    } catch (e) {
+    } on TimeoutException {
+      showMessageDialog("Login Failed", "Request timed out");
+    }
+    catch (e) {
       showMessageDialog("Error", "An error occurred: $e");
     } finally {
       setState(() {
@@ -181,9 +185,11 @@ class _LoginPageState extends State<LoginPage> {
 
   _forgotPassword(context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: () {
+        showMessageDialog("Contact Christolio", "71134227");
+      },
       child: const Text(
-        "Forgot password?",
+        "Any issue?",
         style: TextStyle(color: Colors.blueAccent),
       ),
     );
@@ -198,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignupPage()),
+              MaterialPageRoute(builder: (context) => const SignupPage()),
             );
           },
           child: const Text(

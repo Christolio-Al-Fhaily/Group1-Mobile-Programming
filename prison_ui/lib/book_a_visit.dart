@@ -196,7 +196,7 @@ class _BookAVisitFormState extends State<BookAVisitForm> {
                 children: [
                   // Display inmate ID at the top
                   Text(
-                    'Visit Inmate #${widget.user.id}',
+                    'Visit Inmate #${widget.user.inmateId}',
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

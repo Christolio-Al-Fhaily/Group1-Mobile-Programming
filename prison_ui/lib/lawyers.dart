@@ -53,9 +53,13 @@ class _LawyersPageState extends State<LawyersPage> {
         throw Exception("Failed to fetch lawyers: ${response.statusCode}");
       }
     } on TimeoutException {
-      showErrorDialog("Request timed out.");
+      showErrorDialog("Request timed out please refresh.");
     } catch (error) {
       showErrorDialog(error.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

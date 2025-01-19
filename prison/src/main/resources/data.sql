@@ -26,7 +26,7 @@ INSERT INTO inmates (first_name, last_name) VALUES
 
 -- Insert default admin user
 INSERT INTO users (first_name, last_name, email, password, ssn, date_of_birth, phone_number, inmate_id)
-VALUES ('admin', 'admin', 'admin@prison.com','admin_password_hash', '123456789', '2002-11-17', '71134227', 1);
+VALUES ('admin', 'admin', 'admin@prison.com','5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '123456789', '2002-11-17', '71134227', 1);
 
 INSERT INTO notifications (user_id, notification_type, notification_message)
 VALUES (1, 'MEDICAL', 'Your next medical checkup is scheduled for Jan 20.');

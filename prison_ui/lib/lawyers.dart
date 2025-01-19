@@ -93,7 +93,9 @@ class _LawyersPageState extends State<LawyersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lawyers'),
+        title: const Text('Lawyers',
+            style: TextStyle(fontSize: 25, color: Colors.black)),
+        backgroundColor: Colors.orangeAccent,
       ),
       body: RefreshIndicator(
         onRefresh: fetchData, // Trigger fetchData when the user refreshes

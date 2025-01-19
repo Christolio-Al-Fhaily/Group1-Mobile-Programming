@@ -8,16 +8,16 @@ import 'package:prison_ui/models/notification.dart';
 
 import 'models/user.dart';
 
-class NotificationForm extends StatefulWidget {
+class NotificationPage extends StatefulWidget {
   final User user;
 
-  const NotificationForm({super.key, required this.user});
+  const NotificationPage({super.key, required this.user});
 
   @override
-  State<NotificationForm> createState() => _NotificationFormState();
+  State<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _NotificationFormState extends State<NotificationForm> {
+class _NotificationPageState extends State<NotificationPage> {
   final List<Notif> _notifications = [];
   bool _isLoading = false;
 

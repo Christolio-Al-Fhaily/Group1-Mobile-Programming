@@ -47,11 +47,13 @@ class _ComplaintsFormState extends State<ComplaintsForm> {
 
       try {
         // Send the POST request
-        final response = await http.post(
-          Uri.parse('${dotenv.env['API_URL']!}/complaints'),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(complaintData),
-        ).timeout(const Duration(seconds: 10));
+        final response = await http
+            .post(
+              Uri.parse('${dotenv.env['API_URL']!}/complaints'),
+              headers: {"Content-Type": "application/json"},
+              body: jsonEncode(complaintData),
+            )
+            .timeout(const Duration(seconds: 10));
 
         if (response.statusCode == 201) {
           // Show success message
@@ -88,6 +90,23 @@ class _ComplaintsFormState extends State<ComplaintsForm> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2024),
       lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.orangeAccent, // Header color (month and year)
+              onPrimary: Colors.white, // Text color in header
+              onSurface: Colors.black, // Text color for days
+            ),
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+            ),
+            dialogBackgroundColor:
+                Colors.white, // Background color for date picker
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null && pickedDate != _selectedDate) {
@@ -144,7 +163,13 @@ class _ComplaintsFormState extends State<ComplaintsForm> {
               // Incident Type Dropdown
               DropdownButtonFormField<String>(
                 value: _incidentType,
-                decoration: const InputDecoration(labelText: 'Incident Type'),
+                decoration: const InputDecoration(
+                  labelText: 'Incident Type',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ),
+                ),
                 items: _incidentTypes.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value.toUpperCase(),
@@ -168,7 +193,13 @@ class _ComplaintsFormState extends State<ComplaintsForm> {
               // Description Field
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ),
+                ),
                 maxLines: 4,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -182,7 +213,24 @@ class _ComplaintsFormState extends State<ComplaintsForm> {
               // Submit Button
               ElevatedButton(
                 onPressed: _submitForm,
-                child: const Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orangeAccent,
+                  elevation: 10,
+                  // Set elevation for the shadow
+                  shadowColor: Colors.grey.withOpacity(0.8),
+                  // Customize the shadow color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 32.0),
+                ),
+                child: const Text('Submit',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    )),
               ),
               const SizedBox(
                 height: 10,
